@@ -870,5 +870,21 @@
     "presetWallpaperTitle": {
         "message": "Preset Wallpapers",
         "description": "Title for preset wallpaper settings"
+    },
+    "manageQuickLinks": {
+        "message": "Manage Quick Links",
+        "description": "Title for managing quick links"
+    },
+    "manageQuickLinksDescription": {
+        "message": "Add custom URLs or drag to reorder. Fixed links will be displayed first.",
+        "description": "Description for managing quick links"
+    },
+    "addQuickLink": {
+        "message": "Add Quick Link",
+        "description": "Button text for adding a quick link"
+    },
+    "addQuickLinkDialogTitle": {
+        "message": "Add Quick Link",
+        "description": "Title for add quick link dialog"
     }
 }

@@ -500,6 +500,61 @@ document.addEventListener('DOMContentLoaded', function () {
         showContextMenu(e, site);
       });
 
+      // 添加拖拽功能（仅对固定的快捷链接）
+      if (site.fixed) {
+        linkItem.setAttribute('draggable', 'true');
+        linkItem.dataset.fixed = 'true';
+
+        linkItem.addEventListener('dragstart', (e) => {
+          linkItem.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', site.url);
+        });
+
+        linkItem.addEventListener('dragend', (e) => {
+          linkItem.classList.remove('dragging');
+          document.querySelectorAll('.quick-link-item-container').forEach(item => {
+            item.classList.remove('drag-over');
+          });
+        });
+
+        linkItem.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          
+          const draggingItem = document.querySelector('.dragging');
+          if (draggingItem && draggingItem !== linkItem) {
+            linkItem.classList.add('drag-over');
+          }
+        });
+
+        linkItem.addEventListener('dragleave', (e) => {
+          linkItem.classList.remove('drag-over');
+        });
+
+        linkItem.addEventListener('drop', (e) => {
+          e.preventDefault();
+          linkItem.classList.remove('drag-over');
+          
+          const draggingItem = document.querySelector('.dragging');
+          if (draggingItem && draggingItem !== linkItem) {
+            // 重新排列 DOM 元素
+            const allItems = Array.from(quickLinksContainer.querySelectorAll('.quick-link-item-container'));
+            const draggingIndex = allItems.indexOf(draggingItem);
+            const targetIndex = allItems.indexOf(linkItem);
+            
+            if (draggingIndex < targetIndex) {
+              linkItem.parentNode.insertBefore(draggingItem, linkItem.nextSibling);
+            } else {
+              linkItem.parentNode.insertBefore(draggingItem, linkItem);
+            }
+            
+            // 保存新顺序
+            saveQuickLinksOrder();
+          }
+        });
+      }
+
       fragment.appendChild(linkItem);
     });
 
@@ -955,6 +1010,91 @@ document.addEventListener('DOMContentLoaded', function () {
           resolve(false);
         }
       });
+    });
+  }
+
+  // 添加快捷链接功能
+  function addQuickLink() {
+    const editDialog = document.getElementById('edit-dialog');
+    const editNameInput = document.getElementById('edit-name');
+    const editUrlInput = document.getElementById('edit-url');
+    const editDialogTitle = editDialog.querySelector('h2');
+
+    editDialogTitle.textContent = chrome.i18n.getMessage("addQuickLinkDialogTitle");
+
+    // 清空输入框
+    editNameInput.value = '';
+    editUrlInput.value = '';
+
+    editDialog.style.display = 'block';
+
+    document.getElementById('edit-form').onsubmit = function(event) {
+      event.preventDefault();
+      const newName = editNameInput.value.trim();
+      const newUrl = editUrlInput.value.trim();
+
+      if (newName && newUrl) {
+        const newSite = {
+          name: newName,
+          url: newUrl,
+          favicon: faviconURL(newUrl),
+          fixed: true
+        };
+        
+        // 添加到固定快捷方式
+        chrome.storage.sync.get('fixedShortcuts', (result) => {
+          let fixedShortcuts = result.fixedShortcuts || [];
+          fixedShortcuts.push(newSite);
+          chrome.storage.sync.set({ fixedShortcuts }, () => {
+            if (chrome.runtime.lastError) {
+              console.error('Error saving new shortcut:', chrome.runtime.lastError);
+            } else {
+              generateQuickLinks();
+            }
+          });
+        });
+        
+        editDialog.style.display = 'none';
+      }
+    };
+
+    document.querySelector('.cancel-button').onclick = function() {
+      editDialog.style.display = 'none';
+    };
+
+    document.querySelector('.close-button').onclick = function() {
+      editDialog.style.display = 'none';
+    };
+  }
+
+  // 设置添加按钮事件监听器
+  const addQuickLinkButton = document.getElementById('add-quick-link-button');
+  if (addQuickLinkButton) {
+    addQuickLinkButton.addEventListener('click', addQuickLink);
+  }
+
+  // 保存快捷链接顺序
+  function saveQuickLinksOrder() {
+    chrome.storage.sync.get('fixedShortcuts', (result) => {
+      const fixedShortcuts = result.fixedShortcuts || [];
+      const linkItems = Array.from(document.querySelectorAll('.quick-link-item-container'));
+      const newOrder = [];
+      
+      linkItems.forEach(item => {
+        const url = item.dataset.url;
+        const shortcut = fixedShortcuts.find(s => s.url === url);
+        if (shortcut) {
+          newOrder.push(shortcut);
+        }
+      });
+      
+      if (newOrder.length > 0) {
+        chrome.storage.sync.set({ fixedShortcuts: newOrder }, () => {
+          if (chrome.runtime.lastError) {
+            console.error('Error saving order:', chrome.runtime.lastError);
+          }
+        });
+      }
     });
   }
 

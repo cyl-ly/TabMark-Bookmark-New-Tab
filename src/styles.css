@@ -2126,3 +2126,64 @@ body .default-folders-tabs.sidebar-expanded {
     border-color: var(--primary-color, #10b981);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
+
+/* 设置操作按钮样式 */
+.settings-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.settings-action-button:hover {
+    background-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.settings-action-button:active {
+    transform: translateY(0);
+}
+
+[data-theme="dark"] .settings-action-button {
+    background-color: #10b981;
+}
+
+[data-theme="dark"] .settings-action-button:hover {
+    background-color: #059669;
+}
+
+/* 快捷链接拖拽排序样式 */
+.quick-link-item-container.dragging {
+    opacity: 0.5;
+}
+
+.quick-link-item-container.drag-over {
+    border: 2px dashed #10b981;
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.quick-link-item-container {
+    cursor: move;
+    transition: all 0.2s ease;
+}
+
+.quick-link-item-container[data-fixed="true"]::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    opacity: 0.8;
+}
