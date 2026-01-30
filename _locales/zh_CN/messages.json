@@ -929,5 +929,21 @@
     "bingWallpapersTitle": {
         "message": "必应壁纸",
         "description": "必应壁纸标题"
+    },
+    "manageQuickLinks": {
+        "message": "管理快捷链接",
+        "description": "管理快捷链接设置标题"
+    },
+    "manageQuickLinksDescription": {
+        "message": "添加自定义网址或拖动调整顺序，固定的链接将优先显示",
+        "description": "管理快捷链接设置描述"
+    },
+    "addQuickLink": {
+        "message": "添加快捷链接",
+        "description": "添加快捷链接按钮文本"
+    },
+    "addQuickLinkDialogTitle": {
+        "message": "添加快捷链接",
+        "description": "添加快捷链接对话框标题"
     }
 }
