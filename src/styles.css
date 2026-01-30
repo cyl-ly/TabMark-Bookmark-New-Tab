@@ -2153,12 +2153,27 @@ body .default-folders-tabs.sidebar-expanded {
     transform: translateY(0);
 }
 
+.settings-action-button .material-icons {
+    font-size: 20px;
+    margin-right: 8px;
+}
+
 [data-theme="dark"] .settings-action-button {
     background-color: #10b981;
 }
 
 [data-theme="dark"] .settings-action-button:hover {
     background-color: #059669;
+}
+
+.settings-section {
+    margin-top: 20px;
+}
+
+.settings-section p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 12px;
 }
 
 /* 快捷链接拖拽排序样式 */
@@ -2171,7 +2186,7 @@ body .default-folders-tabs.sidebar-expanded {
     background-color: rgba(16, 185, 129, 0.1);
 }
 
-.quick-link-item-container {
+.quick-link-item-container[data-fixed="true"] {
     cursor: move;
     transition: all 0.2s ease;
 }

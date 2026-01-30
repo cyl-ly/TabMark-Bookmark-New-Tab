@@ -504,6 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (site.fixed) {
         linkItem.setAttribute('draggable', 'true');
         linkItem.dataset.fixed = 'true';
+        linkItem.style.position = 'relative';  // Ensure absolute positioning works for indicator
 
         linkItem.addEventListener('dragstart', (e) => {
           linkItem.classList.add('dragging');
@@ -529,7 +530,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         linkItem.addEventListener('dragleave', (e) => {
-          linkItem.classList.remove('drag-over');
+          // Only remove drag-over if we're leaving the container entirely
+          if (!linkItem.contains(e.relatedTarget)) {
+            linkItem.classList.remove('drag-over');
+          }
         });
 
         linkItem.addEventListener('drop', (e) => {
@@ -1034,6 +1038,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const newUrl = editUrlInput.value.trim();
 
       if (newName && newUrl) {
+        // Validate URL format
+        try {
+          new URL(newUrl);
+        } catch (error) {
+          alert('Please enter a valid URL');
+          return;
+        }
+        
         const newSite = {
           name: newName,
           url: newUrl,
@@ -1044,6 +1056,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // 添加到固定快捷方式
         chrome.storage.sync.get('fixedShortcuts', (result) => {
           let fixedShortcuts = result.fixedShortcuts || [];
+          
+          // Check for duplicate URLs
+          if (fixedShortcuts.some(s => s.url === newUrl)) {
+            alert('This URL is already in your quick links');
+            return;
+          }
+          
           fixedShortcuts.push(newSite);
           chrome.storage.sync.set({ fixedShortcuts }, () => {
             if (chrome.runtime.lastError) {
